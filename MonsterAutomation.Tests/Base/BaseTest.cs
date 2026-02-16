@@ -1,5 +1,6 @@
 ﻿using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
+using MonsterAutomation.Tests.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace MonsterAutomation.Tests.Base
         protected IPage page;
 
         protected const string BaseUrl = "http://localhost:3000/";
+        protected CreateMonstersPage monstersPage;
 
 
 
@@ -38,6 +40,8 @@ namespace MonsterAutomation.Tests.Base
             page = await browser.NewPageAsync();
 
             await page.GotoAsync(BaseUrl);
+            monstersPage = new CreateMonstersPage(page);
+            
         }
 
 

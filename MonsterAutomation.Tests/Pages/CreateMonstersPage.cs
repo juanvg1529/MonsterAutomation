@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Playwright;
+using MonsterAutomation.Tests.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,68 @@ using System.Threading.Tasks;
 
 namespace MonsterAutomation.Tests.Pages
 {
-    internal class CreateMonstersPage
+    public class CreateMonstersPage
     {
+        private readonly IPage _page;
+
+        public CreateMonstersPage(IPage page)
+        {
+            _page = page;
+        }
+
+        public Task ClickMonster(int index) => _page.GetByTestId($"monster-{index}").ClickAsync();
+
+        public Task SetMonsterName (string name)=> _page.GetByTestId(LocatorsPage.MonsterNameInput).Locator("input").FillAsync(name);
+        public Task SetMonsterHP (int value)=> _page.GetByTestId(LocatorsPage.HPValue).Locator("input").FillAsync(value.ToString());
+        public Task SetMonsterDefense (int value)=> _page.GetByTestId(LocatorsPage.DefenseValue).Locator("input").FillAsync(value.ToString());
+        public Task SetMonsterAttack (int value)=> _page.GetByTestId(LocatorsPage.AttackValue).Locator("input").FillAsync(value.ToString());
+        public Task SetMonsterSpeed(int value)=> _page.GetByTestId(LocatorsPage.SpeedValue).Locator("input").FillAsync(value.ToString());
+
+        public Task ClickCreateMonster()=> _page.GetByTestId(LocatorsPage.CreateMonsterBtn).ClickAsync();
+
+        public Task<string> GetDynamicTitle()=> _page.GetByTestId(LocatorsPage.DynamicTitle).InnerTextAsync();
+
+        public Task <int> GetMonsterCardCount()=> _page.GetByTestId(LocatorsPage.MonsterCard).CountAsync();
+
+
+        public async Task CreateMonster(int index, MonsterModel monster)
+        {
+            await ClickMonster(index);
+            await SetMonsterName(monster.Name);
+            await SetMonsterHP(monster.Hp);
+            await SetMonsterDefense(monster.Defense);
+            await SetMonsterAttack(monster.Attack);
+            await SetMonsterSpeed(monster.Speed);
+
+            await ClickCreateMonster();
+        }
+
+        public ILocator GetMonsterCardByName(string name)
+        {
+            var nameLocator = _page.GetByTestId(LocatorsPage.MonsterCardName).Filter(new() { HasTextString = name });
+             return _page.GetByTestId(LocatorsPage.MonsterCard).Filter(new() { Has=nameLocator });
+        }
+        public Task ScrollToMonstersCard (string name)=> GetMonsterCardByName(name).ScrollIntoViewIfNeededAsync();
+        public Task<bool> IsMonsterCardVisible(string name)=> GetMonsterCardByName(name).IsVisibleAsync();
+
+        public Task<bool> IsAlertPresent()=> _page.GetByTestId(LocatorsPage.AlertRequiredFields).IsVisibleAsync();
+
+        private static class LocatorsPage
+        {
+            public const string MonsterNameInput = "monster-name";
+            public const string HPValue = "hp-value";
+            public const string DefenseValue = "defense-value";
+            public const string AttackValue = "attack-value";
+            public const string SpeedValue = "speed-value";
+
+            public const string CreateMonsterBtn = "btn-create-monster";
+            public const string DynamicTitle = "dynamic-title";
+
+            public const string MonsterCard = "monster-card";
+            public const string MonsterCardName = "card-monster-name";
+
+            public const string AlertRequiredFields = "alert-required-fields";
+
+        }
     }
 }
