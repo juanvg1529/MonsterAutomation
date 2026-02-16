@@ -54,6 +54,11 @@ namespace MonsterAutomation.Tests.Pages
 
         public Task<bool> IsAlertPresent()=> _page.GetByTestId(LocatorsPage.AlertRequiredFields).IsVisibleAsync();
 
+        public Task ClickDeleteBtn(string name) => GetMonsterCardByName(name).GetByTestId(LocatorsPage.CardDeleteBtn).ClickAsync();
+        public Task ClickFavoriteBtn(string name) => GetMonsterCardByName(name).GetByTestId(LocatorsPage.FavoriteBtn).ClickAsync();
+        public Task<string?> GetFavoriteStateCardMonster(string name) => GetMonsterCardByName(name).GetByTestId(LocatorsPage.FavoriteBtn).GetAttributeAsync("style");
+
+
         private static class LocatorsPage
         {
             public const string MonsterNameInput = "monster-name";
@@ -69,6 +74,9 @@ namespace MonsterAutomation.Tests.Pages
             public const string MonsterCardName = "card-monster-name";
 
             public const string AlertRequiredFields = "alert-required-fields";
+
+            public const string CardDeleteBtn = "btn-delete";
+            public const string FavoriteBtn = "favorite-btn";
 
         }
     }

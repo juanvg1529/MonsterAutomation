@@ -58,5 +58,89 @@ namespace MonsterAutomation.Tests.Tests
             Assert.That(monsterCreated, Is.False, "Card of monster is not visible");
 
         }
+
+
+        [Test, Description("happy path,delete monster created successfuly")]
+        public async Task Should_Delete_Created_Monster_Successfuly()
+        {
+            var monster = new MonsterModel() { Name = "deletedMonster", Hp = 10, Attack = 62, Defense = 85, Speed = 25 };
+            await monstersPage.CreateMonster(4, monster);
+            await monstersPage.ScrollToMonstersCard(monster.Name);
+
+            var dynamicTitle = await monstersPage.GetDynamicTitle();
+            var initialCountCardsPresent = await monstersPage.GetMonsterCardCount();
+            var monsterCreated = await monstersPage.IsMonsterCardVisible(monster.Name);
+
+            Assert.That(dynamicTitle.Trim(), Is.Not.EqualTo(InitialTitle), "initial value of the title hasn't change");
+            Assert.That(initialCountCardsPresent, Is.EqualTo(1), "the cards present aren't the expected");
+            Assert.That(monsterCreated, Is.True, "Card of monster is not visible");
+
+            await monstersPage.ClickDeleteBtn(monster.Name);
+
+            initialCountCardsPresent = await monstersPage.GetMonsterCardCount();
+            dynamicTitle = await monstersPage.GetDynamicTitle();
+            monsterCreated = await monstersPage.IsMonsterCardVisible(monster.Name);
+
+            Assert.That(dynamicTitle.Trim(), Is.EqualTo(InitialTitle), "initial value of the title has change");
+            Assert.That(initialCountCardsPresent, Is.EqualTo(0), "the cards present aren'count > 1");
+            Assert.That(monsterCreated, Is.False, "Card of monster is visible");
+
+        }
+
+        [Test, Description("happy path, monster created successfuly")]
+        public async Task Should_Toogle_Favorite_State()
+        {
+            var monster = new MonsterModel() { Name = "FavsMonster", Hp = 10, Attack = 62, Defense = 85, Speed = 25 };
+            await monstersPage.CreateMonster(2, monster);
+            await monstersPage.ScrollToMonstersCard(monster.Name);
+
+            var dynamicTitle = await monstersPage.GetDynamicTitle();
+            var initialCountCardsPresent = await monstersPage.GetMonsterCardCount();
+            var monsterCreated = await monstersPage.IsMonsterCardVisible(monster.Name);
+
+            Assert.That(dynamicTitle.Trim(), Is.Not.EqualTo(InitialTitle), "initial value of the title hasn't change");
+            Assert.That(initialCountCardsPresent, Is.EqualTo(1), "the cards present aren't the expected");
+            Assert.That(monsterCreated, Is.True, "Card of monster is not visible");
+
+            var valueBeforeToogle = await monstersPage.GetFavoriteStateCardMonster(monster.Name);
+
+            await monstersPage.ClickFavoriteBtn(monster.Name);
+            var valueAfterToogleON = await monstersPage.GetFavoriteStateCardMonster(monster.Name);
+
+            await monstersPage.ClickFavoriteBtn(monster.Name);
+            var valueAfterToogleOFF = await monstersPage.GetFavoriteStateCardMonster(monster.Name);
+
+            Assert.That(valueBeforeToogle, Is.Not.EqualTo(valueAfterToogleON));
+            Assert.That(valueAfterToogleON, Is.Not.EqualTo(valueAfterToogleOFF));
+
+        }
+
+
+        [Test, Description("happy path, monster created successfuly")]
+        public async Task Should_Create_Multiple_Monsters_Successfuly()
+        {
+            var monster =new List<MonsterModel> {
+                new MonsterModel() { Name = "SuccesMonster", Hp = 10, Attack = 62, Defense = 85, Speed = 25 }, 
+                new MonsterModel() { Name = "SuccesMonster", Hp = 10, Attack = 62, Defense = 85, Speed = 25 } ,
+                new MonsterModel() { Name = "SuccesMonster", Hp = 10, Attack = 62, Defense = 85, Speed = 25 } 
+            };
+
+            for (int i = 0; i < monster.Count; i++) {
+
+                await monstersPage.CreateMonster(index:i+1, monster[i]);
+            }
+           
+            await monstersPage.ScrollToMonstersCard(monster[monster.Count()-1].Name);
+
+            var dynamicTitle = await monstersPage.GetDynamicTitle();
+            var initialCountCardsPresent = await monstersPage.GetMonsterCardCount();
+            var monsterCreated = await monstersPage.IsMonsterCardVisible(monster.Name);
+
+            Assert.That(dynamicTitle.Trim(), Is.Not.EqualTo(InitialTitle), "initial value of the title hasn't change");
+            Assert.That(initialCountCardsPresent, Is.EqualTo(1), "the cards present aren't the expected");
+            Assert.That(monsterCreated, Is.True, "Card of monster is not visible");
+
+        }
+
     }
 }
