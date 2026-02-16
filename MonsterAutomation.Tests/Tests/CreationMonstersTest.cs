@@ -119,18 +119,17 @@ namespace MonsterAutomation.Tests.Tests
         [Test, Description("happy path, monster created successfuly")]
         public async Task Should_Create_Multiple_Monsters_Successfuly()
         {
-            var monsters = new List<MonsterModel> {
-                new MonsterModel() { Name = "SuccesMonster1", Hp = 10, Attack = 62, Defense = 85, Speed = 25 },
+            var monsters =new List<MonsterModel> {
+                new MonsterModel() { Name = "SuccesMonster1", Hp = 10, Attack = 62, Defense = 85, Speed = 25 }, 
                 new MonsterModel() { Name = "SuccesMonster2", Hp = 10, Attack = 62, Defense = 85, Speed = 25 } ,
-                new MonsterModel() { Name = "SuccesMonster3", Hp = 10, Attack = 62, Defense = 85, Speed = 25 }
+                new MonsterModel() { Name = "SuccesMonster3", Hp = 10, Attack = 62, Defense = 85, Speed = 25 } 
             };
 
             for (int i = 0; i < monsters.Count; i++) {
 
-                await monstersPage.CreateMonster(index: i + 1, monsters[i]);
+                await monstersPage.CreateMonster(index:i+1, monsters[i]);
             }
-            var monsterCount = monsters[monsters.Count() - 1];
-            await monstersPage.ScrollToMonstersCard(monsterCount.Name);
+            await monstersPage.ScrollToMonstersCard(monsters[monsters.Count()-1].Name);
 
             var dynamicTitle = await monstersPage.GetDynamicTitle();
             var initialCountCardsPresent = await monstersPage.GetMonsterCardCount();
