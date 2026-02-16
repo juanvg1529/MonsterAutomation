@@ -119,26 +119,39 @@ namespace MonsterAutomation.Tests.Tests
         [Test, Description("happy path, monster created successfuly")]
         public async Task Should_Create_Multiple_Monsters_Successfuly()
         {
-            var monster =new List<MonsterModel> {
-                new MonsterModel() { Name = "SuccesMonster", Hp = 10, Attack = 62, Defense = 85, Speed = 25 }, 
-                new MonsterModel() { Name = "SuccesMonster", Hp = 10, Attack = 62, Defense = 85, Speed = 25 } ,
-                new MonsterModel() { Name = "SuccesMonster", Hp = 10, Attack = 62, Defense = 85, Speed = 25 } 
+            var monsters = new List<MonsterModel> {
+                new MonsterModel() { Name = "SuccesMonster1", Hp = 10, Attack = 62, Defense = 85, Speed = 25 },
+                new MonsterModel() { Name = "SuccesMonster2", Hp = 10, Attack = 62, Defense = 85, Speed = 25 } ,
+                new MonsterModel() { Name = "SuccesMonster3", Hp = 10, Attack = 62, Defense = 85, Speed = 25 }
             };
 
-            for (int i = 0; i < monster.Count; i++) {
+            for (int i = 0; i < monsters.Count; i++) {
 
-                await monstersPage.CreateMonster(index:i+1, monster[i]);
+                await monstersPage.CreateMonster(index: i + 1, monsters[i]);
             }
-           
-            await monstersPage.ScrollToMonstersCard(monster[monster.Count()-1].Name);
+            var monsterCount = monsters[monsters.Count() - 1];
+            await monstersPage.ScrollToMonstersCard(monsterCount.Name);
 
             var dynamicTitle = await monstersPage.GetDynamicTitle();
             var initialCountCardsPresent = await monstersPage.GetMonsterCardCount();
-            var monsterCreated = await monstersPage.IsMonsterCardVisible(monster.Name);
+        
 
             Assert.That(dynamicTitle.Trim(), Is.Not.EqualTo(InitialTitle), "initial value of the title hasn't change");
-            Assert.That(initialCountCardsPresent, Is.EqualTo(1), "the cards present aren't the expected");
-            Assert.That(monsterCreated, Is.True, "Card of monster is not visible");
+            Assert.That(initialCountCardsPresent, Is.EqualTo(monsters.Count()), "the cards present aren't the expected");
+
+            foreach( var m in monsters)
+            {
+                var cardMonster= monstersPage.GetMonsterCardByName(m.Name);
+
+                Assert.That(await monstersPage.IsMonsterCardVisible(m.Name), Is.True);
+
+                Assert.That(await monstersPage.GetMonsterCardHp(m.Name), Is.EqualTo(m.Hp.ToString()), "HP value is not the same createed");
+                Assert.That(await monstersPage.GetMonsterCardAttack(m.Name), Is.EqualTo(m.Attack.ToString()), "HP value is not the same createed");
+                Assert.That(await monstersPage.GetMonsterCardDefense(m.Name), Is.EqualTo(m.Defense.ToString()), "HP value is not the same createed");
+                Assert.That(await monstersPage.GetMonsterCardSpeed(m.Name), Is.EqualTo(m.Speed.ToString()), "HP value is not the same createed");
+
+            }
+          
 
         }
 
